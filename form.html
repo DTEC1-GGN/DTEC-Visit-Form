@@ -220,198 +220,201 @@
   <script>
 
     async function generatePDF() {
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const age = document.getElementById('age').value;
-        const date = document.getElementById('date').value;
-        const title = document.getElementById('title').value;
-    
-        const selectedIndustries = getSelectedValuesWithParagraphs('Industries');
-        const selectedUseCases = getSelectedValuesWithParagraphs('UseCases');
-        //const selectedDemos = getSelectedValuesWithParagraphs('Demos');
-        const classes = [];
-    
-        // Collect class input data
-        const classInputs = document.querySelectorAll('.class-input');
-        classInputs.forEach(inputDiv => {
-            const className = inputDiv.querySelector('input[name="class_name"]').value;
-            const classCode = inputDiv.querySelector('input[name="class_code"]').value;
-            classes.push({ className, classCode });
-        });
-    
-        // Create a new PDF document
-        const pdfDoc = await PDFLib.PDFDocument.create();
-        
-        // Add multiple pages
-        let page;
-        let pageNum = 1;
-        let yPosition = 800; // Initial y position on the first page
-        const footerMargin =100;
-    
-        // Helper function to add a new page
-        async function addNewPage() {
-            page = pdfDoc.addPage();
-            addheader(page);
-            const watermarkImageBytes =  await fetch('/DTEC-Visit-Form-main/DTEC-Visit-Form-main/RA_Logo.png').then((res) =>res.arrayBuffer());
-            const watermarkImage = await pdfDoc.embedPng(watermarkImageBytes);
-            const watermarksDims = watermarkImage.scale(0.5);
-            page.drawImage(watermarkImage,{
-              x: (page.getWidth() - watermarksDims.width)/2,
-              y: (page.getHeight() - watermarksDims.Height)/2,
-              width: watermarksDims.width,
-              Height: watermarksDims.Height,
-              opacity: 0.2
-            });
-            yPosition = 900 - footerMargin; // Reset y position for the new page
-            pageNum++;
-           
-        }
-        function addheader(page){
-          const footerText = 'Rockwell';
-          const footerText3 = 'Automation';
-          const footerText2='Building 10-B, 5th Floor DLF Cyber City, Phase 2, Gurugram, Haryana-12001'
-          
-          page.drawLine({
-            start: {x:40,y:100},
-            end: {x:550,y:100},
-            thickness:1,
-          });
-          yPosition -= 20; 
-          page.drawText(footerText,{x:50,y:70,size:15, color:PDFLib.rgb(1,0,0),font:pdfDoc.embedStandardFont(PDFLib.StandardFonts.HelveticaBold)});
-          yPosition -= 20; 
-          page.drawText(footerText3,{x:50,y:50,size:15, color:PDFLib.rgb(1,0,0),font:pdfDoc.embedStandardFont(PDFLib.StandardFonts.HelveticaBold)});
-          yPosition -= 20; 
-          page.drawText(footerText2,{x:50,y:30,size:9});
-          yPosition -= 20; 
-         
-           
-        
-        }
-    
-        // Add content to pages
-        addNewPage(); // Start with the first page
-      // Constructing PDF filename
-    let pdfFileName;
-    if (date && title) {
-        pdfFileName = `${date}_${title}.pdf`; // Use selected date and title if both are present
-    } else if (date) {
-        pdfFileName = `${date}.pdf`; // Use only selected date
-    } else {
-        pdfFileName = 'generated.pdf'; // Fallback name if no specific date is selected
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const age = document.getElementById('age').value;
+      const date = document.getElementById('date').value;
+      const title = document.getElementById('title').value;
+  
+      const selectedIndustries = getSelectedValuesWithParagraphs('Industries');
+      const selectedUseCases = getSelectedValuesWithParagraphs('UseCases');
+      //const selectedDemos = getSelectedValuesWithParagraphs('Demos');
+      const classes = [];
+  
+      // Collect class input data
+      const classInputs = document.querySelectorAll('.class-input');
+      classInputs.forEach(inputDiv => {
+          const className = inputDiv.querySelector('input[name="class_name"]').value;
+          const classCode = inputDiv.querySelector('input[name="class_code"]').value;
+          classes.push({ className, classCode });
+      });
+  
+      // Create a new PDF document
+      const pdfDoc = await PDFLib.PDFDocument.create();
+      
+      // Add multiple pages
+      let page;
+      let pageNum = 1;
+      let yPosition = 800; // Initial y position on the first page
+      const footerMargin =100;
+  
+      // Helper function to add a new page
+      function addNewPage() {
+        page = pdfDoc.addPage();
+        addheader(page);
+        yPosition = 900 - footerMargin; // Reset y position for the new page
+        pageNum++;
+       
     }
     
-        // Add form data to the PDF
-        page.drawText(`${title}`, { x: 150, y: yPosition, size: 20 });
-        yPosition -= 50;
-        page.drawText(`Account Manager: ${name}`, { x: 50, y: yPosition, size: 12 });
-        yPosition -= 20;
-        page.drawText(`Account: ${email}`, { x: 50, y: yPosition, size: 12 });
-        yPosition -= 20;
-        page.drawText(`Location: ${age}`, { x: 50, y: yPosition, size: 12 });
-        yPosition -= 20;
-        page.drawText(`Date: ${date}`, { x: 50, y: yPosition, size: 12 });
-        yPosition -= 30;
-        // Add classes details
-      let pageIndex = 0; // Initial page index
+    
+      function addheader(page){
+        const footerText = 'Rockwell Automation';
+        const footerText2='Building 10-B, 5th Floor DLF Cyber City, Phase 2, Gurugram, Haryana-12001'
+        
+        page.drawLine({
+          start: {x:40,y:100},
+          end: {x:550,y:100},
+          thickness:1,
+        });
+        yPosition -= 20; 
+        page.drawText(footerText,{x:50,y:70,size:10});
+        yPosition -= 20; 
+        page.drawText(footerText2,{x:50,y:40,size:9});
+        yPosition -= 20; 
+       
+         
+      
+      }
+      
+  
+      // Add content to pages
+      addNewPage(); // Start with the first page
+    // Constructing PDF filename
+  let pdfFileName;
+  if (date && title) {
+      pdfFileName = `${date}_${title}.pdf`; // Use selected date and title if both are present
+  } else if (date) {
+      pdfFileName = `${date}.pdf`; // Use only selected date
+  } else {
+      pdfFileName = 'generated.pdf'; // Fallback name if no specific date is selected
+  }
+  
+      // Add form data to the PDF
+      page.drawText(`${title}`, { x: 150, y: yPosition, size: 20 });
+      yPosition -= 50;
+      page.drawText(`Account Manager: ${name}`, { x: 50, y: yPosition, size: 12 });
+      yPosition -= 20;
+      page.drawText(`Account: ${email}`, { x: 50, y: yPosition, size: 12 });
+      yPosition -= 20;
+      page.drawText(`Location: ${age}`, { x: 50, y: yPosition, size: 12 });
+      yPosition -= 20;
+      page.drawText(`Date: ${date}`, { x: 50, y: yPosition, size: 12 });
+      yPosition -= 30;
+      // Add classes details
+    let pageIndex = 0; // Initial page index
 page.drawText('Visitors:', { x: 50, y: yPosition, size: 12 });
 classes.forEach(({ className, classCode }, index) => {
-    if (yPosition < footerMargin + 30) {
-        // Check if content exceeds page height
-        addNewPage();
-        yPosition = 800; // Reset yPosition for new page
-        pageIndex++; // Increment page index
-    }
+  if (yPosition < footerMargin + 30) {
+      // Check if content exceeds page height
+      addNewPage();
+      yPosition = 800; // Reset yPosition for new page
+      pageIndex++; // Increment page index
+  }
 
-    const displayIndex = index + 1; // Calculate 1-based index for display
-    const yOffset = (pageIndex > 0) ? 0 : 50; // Offset yPosition for subsequent pages
+  const displayIndex = index + 1; // Calculate 1-based index for display
+  const yOffset = (pageIndex > 0) ? 0 : 50; // Offset yPosition for subsequent pages
 
-    page.drawText(`${displayIndex} : ${className} - ${classCode}`, { x: 80, y: yPosition - yOffset, size: 12 });
-    yPosition -= 20; // Adjust yPosition for the next item
+  page.drawText(`${displayIndex} : ${className} - ${classCode}`, { x: 80, y: yPosition - yOffset, size: 12 });
+  yPosition -= 20; // Adjust yPosition for the next item
 });
 yPosition -= 40;
-    
-        // Add selected Industries with paragraphs
-        yPosition -= 30;
-        page.drawText('Industries:', { x: 50, y: yPosition, size: 16 });
-        yPosition -= 20;
-        selectedIndustries.forEach(({ value, paragraph }) => {
-            if (yPosition < footerMargin +30) addNewPage(); // Check if content exceeds page height
-            page.drawText(value, { x: 100, y: yPosition, size: 12 });
-            yPosition -= 20;
-            
-        });
-    
-        // Add selected Use Cases with paragraphs
-        yPosition -= 20;
-        page.drawText('Use Cases:', { x: 50, y: yPosition, size: 16 });
-        yPosition -= 20;
-        selectedUseCases.forEach(({value, paragraph }) => {
-          if (yPosition < footerMargin + 20) {
-              addNewPage(); // Check if content exceeds page height
-          }
-          page.drawText(value, { x: 80, y: yPosition, size: 12 });
+  
+      // Add selected Industries with paragraphs
+      yPosition -= 30;
+      page.drawText('Industries:', { x: 50, y: yPosition, size: 16 });
+      yPosition -= 20;
+      selectedIndustries.forEach(({ value, paragraph }) => {
+          if (yPosition < footerMargin +30) addNewPage(); // Check if content exceeds page height
+          page.drawText(value, { x: 100, y: yPosition, size: 12 });
           yPosition -= 20;
-      
-          const lines = paragraph.split('\n'); // Split paragraph into lines
-          lines.forEach(line => {
-              if (yPosition < footerMargin + 30) {
-                  addNewPage(); // Check if adding a line exceeds page height
-              }
-              page.drawText(line, { x: 80, y: yPosition, size: 10 });
-              yPosition -= 12; // Adjust line spacing
-          });
-       
-      
-          yPosition -= 20; // Additional spacing between different values
-           
-        });
-    
-        // Add selected Demos with paragraphs
-        /*
-        yPosition -= 20;
-        page.drawText('Demos:', { x: 50, y: yPosition, size: 16 });
-        yPosition -= 20;
-        selectedDemos.forEach(({ value, paragraph }) => {
-          if (yPosition < footerMargin + 30) {
-              addNewPage(); // Check if content exceeds page height
-          }
-          page.drawText(value, { x: 80, y: yPosition, size: 12 });
-          yPosition -= 20;
-      
-          const lines = paragraph.split('\n'); // Split paragraph into lines
-          lines.forEach(line => {
-              if (yPosition < footerMargin +20) {
-                  addNewPage(); // Check if adding a line exceeds page height
-              }
-              page.drawText(line, { x: 80, y: yPosition, size: 10 });
-              yPosition -= 12; // Adjust line spacing
-          });
-       
-      
-          yPosition -= 20; // Additional spacing between different values
+          
       });
-      
-    
-        // Add classes details
+  
+     // Add selected Use Cases with paragraphs and images
+yPosition -= 20;
+page.drawText('Use Cases:', { x: 50, y: yPosition, size: 16 });
+yPosition -= 20;
+
+for (const { value, paragraph, imagePath } of selectedUseCases) {
+
+  if (yPosition < footerMargin + 50) addNewPage();
+
+  page.drawText(value, { x: 80, y: yPosition, size: 12 });
+  yPosition -= 20;
+
+  // Embed and draw image
+if (imagePath) {
+  try {
+      const imageBytes = await fetch(imagePath).then(res => res.arrayBuffer());
+      const pngImage = await pdfDoc.embedPng(imageBytes);
+      const { width, height } = pngImage.scale(0.2);
+
+      if (yPosition < height + footerMargin) addNewPage();
+
+      page.drawImage(pngImage, { x: 80, y: yPosition - height, width, height });
+      yPosition -= height + 20;
+  } catch (error) {
+      console.error("Error loading image:", error);
+  }
+}
+
+  const lines = paragraph.split('\n');
+  for (const line of lines) {
+      if (yPosition < footerMargin + 30) addNewPage();
+      page.drawText(line, { x: 80, y: yPosition, size: 10 });
+      yPosition -= 12;
+  }
+
+  
+
+  yPosition -= 20;
+}
+  
+      // Add selected Demos with paragraphs
+      /*
+      yPosition -= 20;
+      page.drawText('Demos:', { x: 50, y: yPosition, size: 16 });
+      yPosition -= 20;
+      selectedDemos.forEach(({ value, paragraph }) => {
+        if (yPosition < footerMargin + 30) {
+            addNewPage(); // Check if content exceeds page height
+        }
+        page.drawText(value, { x: 80, y: yPosition, size: 12 });
         yPosition -= 20;
-        
+    
+        const lines = paragraph.split('\n'); // Split paragraph into lines
+        lines.forEach(line => {
+            if (yPosition < footerMargin +20) {
+                addNewPage(); // Check if adding a line exceeds page height
+            }
+            page.drawText(line, { x: 80, y: yPosition, size: 10 });
+            yPosition -= 12; // Adjust line spacing
+        });
+     
+    
+        yPosition -= 20; // Additional spacing between different values
+    });
+    
+  
+      // Add classes details
+      yPosition -= 20;
+      
 */
 
-    
-          // Save the PDF
-    const pdfBytes = await pdfDoc.save();
-    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    const url = URL.createObjectURL(blob);
+  
+        // Save the PDF
+  const pdfBytes = await pdfDoc.save();
+  const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+  const url = URL.createObjectURL(blob);
 
-    // Create a link to download the PDF
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = pdfFileName;
-    a.click();
-    }
-    
-    
-    
+  // Create a link to download the PDF
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = pdfFileName;
+  a.click();
+  }
+  
 
     function getSelectedValuesWithParagraphs(category) {
       const checkboxes = document.querySelectorAll(`input[id^="${category}-"]:checked`);
@@ -420,6 +423,7 @@ yPosition -= 40;
       checkboxes.forEach(checkbox => {
           const value = checkbox.value;
           let paragraphs = [];
+          let imagePath = '';
   
           switch (value) {
               case 'ACM':
@@ -430,6 +434,8 @@ yPosition -= 40;
                   'of products. It designed to help manage control system application code throughout its',
                   'lifecycle, from development to deployment and maintenance.'
                   ];
+                  imagePath = '';
+                 
                   break;
                   case 'APC/ MPC':
                   paragraphs = ['Advanced Process Control (APC) refers to a set of sophisticated control techniques and',
@@ -445,6 +451,7 @@ yPosition -= 40;
                   'actions in real-time. MPC offers advantages such as improved process performance, increased',
                   'efficiency, and enhanced robustness in diverse industrial applications.'
                   ];
+                  imagePath = 'https://raw.githubusercontent.com/DTEC1-GGN/DTEC-Visit-Form/refs/heads/main/images/APCMPC.png';
                   break;
                   case 'Asset Line Visibility':
                   paragraphs = ['Asset Line Visibility" refers to the ability to gain comprehensive insight and oversight into',
@@ -455,6 +462,7 @@ yPosition -= 40;
                   'assets within specific lines or groups, leading to improved operational efficiency, reduced',
                   'downtime, and enhanced asset management practices.'
                   ];
+                  imagePath = 'https://raw.githubusercontent.com/DTEC1-GGN/DTEC-Visit-Form/refs/heads/main/images/asset_line.png';
                   break;
                   case 'Asset Performance Management':
                   paragraphs = ['Asset Performance Management (APM) is a comprehensive approach to managing the lifecycle',
@@ -467,6 +475,7 @@ yPosition -= 40;
                   'asset-intensive industries such as manufacturing, energy, utilities, transportation, and',
                   'infrastructure.'
                   ];
+                  imagePath = 'https://raw.githubusercontent.com/DTEC1-GGN/DTEC-Visit-Form/refs/heads/main/images/asset_performance.png';
                   break;
                   case 'Augmented Remote Assistance':
                   paragraphs = ['Augmented Remote Assistance (ARA) refers to the use of augmented reality (AR) and other',
@@ -480,6 +489,7 @@ yPosition -= 40;
                   'knowledge and guidance is essential for improving efficiency, reducing downtime, and',
                   'enhancing user experiences.'
                   ];
+                  imagePath = '';
                   break;
                   case 'Automatic Changeover':
                   paragraphs = ['Automatic changeover, also known as automated changeover or quick changeover, refers to the',
@@ -491,6 +501,7 @@ yPosition -= 40;
                   'downtime, increase production flexibility, respond quickly to changing market demands, and',
                   'improve overall operational efficiency and competitiveness.'
                   ];
+                  imagePath = '';
                   break;
                   case 'Batch Performance Analytics':
                   paragraphs = ['Batch performance analytics refers to the process of analyzing the performance of batch',
@@ -504,6 +515,7 @@ yPosition -= 40;
                   'analytical techniques, organizations can achieve greater operational excellence and',
                   'competitiveness in the marketplace.'
                   ];
+                  imagePath = '';
                   break;
                   case 'CNC TW Demo':
                   paragraphs = ['ThingWorx is an industrial Internet of Things (IIoT) platform developed by PTC, a global provider',
@@ -514,6 +526,7 @@ yPosition -= 40;
                   'solutions, drive digital transformation, and unlock new opportunities for innovation, efficiency,',
                   'and competitiveness in the industrial sector'
                   ];
+                  imagePath = '';
                   break;
                   case 'Condition Monitoring':
                   paragraphs = ['Condition monitoring is a proactive maintenance strategy that involves continuously monitoring',
@@ -526,6 +539,7 @@ yPosition -= 40;
                   'implementing condition monitoring systems, organizations can improve operational reliability,',
                   'reduce maintenance costs, and enhance overall asset performance and availability.'
                   ];
+                  imagePath = '';
                   break;
                   case 'Connected Work Cell':
                   paragraphs = ['A Connected Work Cell refers to a manufacturing setup where individual machines, equipment,',
@@ -537,6 +551,7 @@ yPosition -= 40;
                   'interconnected manufacturing environment that adapts to changing demands and optimizes',
                   'resources effectively.'
                   ];
+                  imagePath = 'https://raw.githubusercontent.com/DTEC1-GGN/DTEC-Visit-Form/refs/heads/main/images/ConnectedWorkCell.png';
                   break;
                   case 'Cyber Threat Detection & Mitigation':
                   paragraphs = ['Cyber threat detection and mitigation involve the processes and technologies used to identify,',
@@ -548,6 +563,7 @@ yPosition -= 40;
                   'minimize the likelihood and impact of security breaches, and protect their valuable assets and',
                   'reputation.'
                   ];
+                  imagePath = '';
                   break;
                   case 'Digital Engineering':
                   paragraphs = ['Digital engineering refers to the use of digital technologies, tools, and methodologies',
@@ -560,6 +576,7 @@ yPosition -= 40;
                   'technologies and methodologies, engineers can design and deliver innovative products and',
                   'solutions more effectively and efficiently than ever before.'
                   ];
+                  imagePath = '';
                   break;
                   case 'Digital Shift Handover':
                   paragraphs = ['Digital shift handover refers to the use of digital tools and technologies to facilitate the transfer',
@@ -571,6 +588,7 @@ yPosition -= 40;
                   'leading to smoother transitions, improved operational efficiency, and better decision-making',
                   'within organizations that rely on shift-based work schedules.'
                   ];
+                  imagePath = '';
                   break;
                   case 'Digital Work Instruction/ Knowledge Transfer':
                   paragraphs = ['Digital work instructions and knowledge transfer involve the use of digital tools and',
@@ -582,6 +600,7 @@ yPosition -= 40;
                   'with standards and regulations, and facilitate continuous learning and skill development among',
                   'employees.'
                   ];
+                  imagePath = '';
                   break;
                   case 'Digital Work Order Management':
                   paragraphs = ['Digital work order management involves the use of digital tools and technologies to create,',
@@ -592,6 +611,7 @@ yPosition -= 40;
                   'improve efficiency, reduce downtime, enhance customer satisfaction, and optimize resource',
                   'utilization.'
                   ];
+                  imagePath = '';
                   break;
                   case 'Drive Analytics':
                   paragraphs = ['Drive analytics refers to the process of collecting, analyzing, and interpreting data related to the',
@@ -603,6 +623,7 @@ yPosition -= 40;
                   'optimize their operation, improve energy efficiency, prevent failures, and enhance overall',
                   'system reliability.'
                   ];
+                  imagePath = 'https://raw.githubusercontent.com/DTEC1-GGN/DTEC-Visit-Form/refs/heads/main/images/DriveAnalytics.png';
                   break;
                   case 'Emulate 3D':
                   paragraphs = ['Emulate3D is a software platform developed by Rockwell Automation that provides simulation',
@@ -614,6 +635,7 @@ yPosition -= 40;
                   'optimize their operations with confidence. It helps organizations reduce project risks, improve',
                   'system performance, and accelerate time-to-market for new products and facilities.'
                   ];
+                  imagePath = '';
                   break;
                   case 'Energy Management':
                   paragraphs = ['An Energy Management System (EMS) is a comprehensive framework and set of tools designed',
@@ -626,6 +648,7 @@ yPosition -= 40;
                   'enabling informed decision-making and proactive action to maximize energy performance and',
                   'minimize environmental impact.'
                   ];
+                  imagePath = 'https://raw.githubusercontent.com/DTEC1-GGN/DTEC-Visit-Form/refs/heads/main/images/EnergyManagement.png';
                   break;
                   case 'FactoryTalk Analytics Guardian AI':
                   paragraphs = ['FactoryTalk Analytics GuardianAI is a predictive maintenance tool designed to minimize',
@@ -641,6 +664,7 @@ yPosition -= 40;
                   'Integration with Existing Devices: Utilizes data from existing Rockwell Automation devices,',
                   'eliminating the need for additional sensors.'
                   ];
+                  imagePath = 'https://raw.githubusercontent.com/DTEC1-GGN/DTEC-Visit-Form/refs/heads/main/images/GuardianAI.png';
                   break;
                   case 'FactoryTalk Analytics Logix AI/ Soft Sensor':
                   paragraphs = ['FactoryTalk Analytics LogixAI is an advanced tool that integrates machine learning and',
@@ -651,6 +675,7 @@ yPosition -= 40;
                   'models can provide insights into operational behaviors, helping to improve quality, reduce',
                   'downtime, and enhance overall process control.'
                   ];
+                  imagePath = 'https://raw.githubusercontent.com/DTEC1-GGN/DTEC-Visit-Form/refs/heads/main/images/LogixAI.png';
                   break;
                   case 'FactoryTalk Analytics Vision AI':
                   paragraphs = ['FactoryTalk Analytics VisionAI is a no-code solution designed to enhance quality inspection in',
@@ -665,6 +690,7 @@ yPosition -= 40;
                   'Real-Time Data Analysis: Provides critical insights to improve quality and maximize yield.',
                   'Scalability: Easily integrates with existing systems and scales across different production lines.'
                   ];
+                  imagePath = 'https://raw.githubusercontent.com/DTEC1-GGN/DTEC-Visit-Form/refs/heads/main/images/VisionAI.png';
                   break;
                   case 'FactoryTalk AssetCenter':
                   paragraphs = ['FactoryTalk Asset Center is an asset management software solution designed to help',
@@ -676,6 +702,7 @@ yPosition -= 40;
                   'functionalities, and integration with other systems. It serves as a valuable tool for asset-',
                   'intensive industries seeking to maximize the value and lifespan of their industrial assets.'
                   ];
+                  imagePath = 'https://raw.githubusercontent.com/DTEC1-GGN/DTEC-Visit-Form/refs/heads/main/images/AssetCenter.png';
                   break;
                   case 'FactoryTalk Remote Access':
                   paragraphs = ['FactoryTalk Remote Access is a software solution developed by Rockwell Automation that',
@@ -688,6 +715,7 @@ yPosition -= 40;
                   'troubleshoot, and maintain manufacturing assets remotely, improving operational efficiency',
                   'and reducing downtime.'
                   ];
+                  imagePath = 'https://raw.githubusercontent.com/DTEC1-GGN/DTEC-Visit-Form/refs/heads/main/images/RemoteAccess.png';
                   case 'Fiix':
                   paragraphs = ['Fiix is a cloud-based computerized maintenance management system (CMMS). Fiix provides',
                   'comprehensive maintenance management capabilities to help organizations optimize asset',
@@ -696,6 +724,7 @@ yPosition -= 40;
                   'professionals seeking to streamline their maintenance operations and drive continuous',
                   'improvement.'
                   ];
+                  imagePath = 'https://raw.githubusercontent.com/DTEC1-GGN/DTEC-Visit-Form/refs/heads/main/images/Fiix.png';
                   break;
                   case 'Freshtrax':
                   paragraphs = ['ThingWorx FreshTrax leverages IoT technology to provide real-time monitoring, tracking, and',
@@ -704,6 +733,7 @@ yPosition -= 40;
                   'ensure the quality, safety, and freshness of perishable goods throughout the supply chain, while',
                   'optimizing operations, reducing costs, and complying with regulatory requirements.'
                   ];
+                  imagePath = 'https://raw.githubusercontent.com/DTEC1-GGN/DTEC-Visit-Form/refs/heads/main/images/Freshtrax.png';
                   break;
                   case 'FT Metrics':
                   paragraphs = ['FactoryTalk Metrics is designed to provide manufacturers with comprehensive manufacturing',
@@ -713,6 +743,7 @@ yPosition -= 40;
                   'capabilities, allowing them to collect, analyze, and visualize real-time production data to',
                   'improve operational efficiency, productivity, and decision-making.'
                   ];
+                  imagePath = '';
                   break;
                   case 'Golden Batch':
                   paragraphs = ['Golden Batch, also known as "Golden Batch Analysis" or "Golden Batch Identification," is a',
@@ -726,12 +757,14 @@ yPosition -= 40;
                   'can establish a benchmark for quality, drive continuous improvement, and enhance customer',
                   'satisfaction and confidence in their products.'
                   ];
+                  imagePath = '';
                   break;
                   case 'ICT':
                   paragraphs = ['Independent cart technology offers a flexible and scalable solution for automating material',
                   'transport and handling tasks in various industries, improving efficiency, productivity, and safety',
                   'in logistics and manufacturing operations.'
                   ];
+                  imagePath = '';
                   break;
                   case 'IDC':
                   paragraphs = ['An industrial data center, also known as a data center for industrial applications, is a facility',
@@ -744,6 +777,7 @@ yPosition -= 40;
                   'innovation, improve operational efficiency, and achieve competitive advantage in industrial',
                   'sectors such as manufacturing, energy, utilities, transportation, and smart cities.'
                   ];
+                  imagePath = '';
                   break;
                   case 'IMCC':
                   paragraphs = ['Intelligent Motor Control Centers (IMCC) are advanced systems designed to enhance motor',
@@ -758,14 +792,17 @@ yPosition -= 40;
                   'Predictive Insights: Utilize predictive analytics to foresee and mitigate potential issues.',
                   'Scalability and Security: Designed to be scalable, smarter, safer, and more secure.'
                   ];
+                  imagePath = '';
                   break;
                   case 'Mighty Q':
                   paragraphs = [''
                   ];
+                  imagePath = '';
                   break;
                   case 'Minecorp':
                   paragraphs = [''
                   ];
+                  imagePath = '';
                   break;
                   case 'OT Security':
                   paragraphs = ['Unlike traditional IT systems, which focus on data processing and communication, OT systems',
@@ -777,6 +814,7 @@ yPosition -= 40;
                   'Safety: Protecting personnel, equipment, and the environment.',
                   'Confidentiality: Safeguarding sensitive information within OT networks.'
                   ];
+                  imagePath = 'https://raw.githubusercontent.com/DTEC1-GGN/DTEC-Visit-Form/refs/heads/main/images/Security.png';
                   break;
                   case 'PlantPAx Analytics':
                   paragraphs = ['PlantPAx Analytics is a cloud-enabled solution developed by Rockwell Automation. It helps',
@@ -785,6 +823,7 @@ yPosition -= 40;
                   'contextualized analytics, enabling users to monitor, analyze, and optimize industrial',
                   'automation KPIs'
                   ];
+                  imagePath = 'https://raw.githubusercontent.com/DTEC1-GGN/DTEC-Visit-Form/refs/heads/main/images/PlantPAX.png';
                   break;
                   case 'PlantWide Control/ Industry Dashboard':
                   paragraphs = ['Plantwide control, also known as plant-wide process control, refers to the implementation of',
@@ -798,6 +837,7 @@ yPosition -= 40;
                   'stakeholders with actionable insights, real-time visibility, and decision support tools to optimize',
                   'plant performance and achieve strategic business objectives.'
                   ];
+                  imagePath = '';
                   break;
                   case 'Plex':
                   paragraphs = ['Plex, also known as Plex Manufacturing Cloud, is a cloud-based enterprise resource planning',
@@ -810,14 +850,17 @@ yPosition -= 40;
                   'manufacturers optimize production processes, reduce costs, and deliver high-quality products',
                   'to customers efficiently.'
                   ];
+                  imagePath = '';
                   break;
                   case 'RA Dairy':
                   paragraphs = [''
                   ];
+                  imagePath = '';
                   break;
                   case 'RA Motors/ RA Tire/ RA Battery':
                   paragraphs = [''
                   ];
+                  imagePath = '';
                   break;
                   case 'Secured Remote Assistance':
                   paragraphs = ['Secured Remote Assistance refers to the provision of remote support and guidance while',
@@ -829,6 +872,7 @@ yPosition -= 40;
                   'assistance operations are conducted securely and confidently, protecting sensitive information',
                   'and assets while providing effective support and guidance to users and technicians remotely.'
                   ];
+                  imagePath = '';
                   break;
                   case 'Smart Sensor':
                   paragraphs = ['A smart sensor is an advanced sensing device equipped with built-in intelligence and',
@@ -839,6 +883,7 @@ yPosition -= 40;
                   'various applications in industries such as manufacturing, healthcare, automotive,',
                   'environmental monitoring, and smart infrastructure.'
                   ];
+                  imagePath = 'https://raw.githubusercontent.com/DTEC1-GGN/DTEC-Visit-Form/refs/heads/main/images/SmartSensor.png';
                   break;
                   case 'Thin Manager':
                   paragraphs = ['ThinManager is a software platform developed by Rockwell Automation that specializes in',
@@ -850,6 +895,7 @@ yPosition -= 40;
                   'resources, enabling organizations to improve operational efficiency, security, and mobility in',
                   'manufacturing environments.'
                   ];
+                  imagePath = 'https://raw.githubusercontent.com/DTEC1-GGN/DTEC-Visit-Form/refs/heads/main/images/Thinmanager.png';
                   break;
                   case 'TW Dashboard':
                   paragraphs = ['ThingWorx is an industrial Internet of Things (IIoT) platform developed by PTC, a global provider',
@@ -860,6 +906,7 @@ yPosition -= 40;
                   'solutions, drive digital transformation, and unlock new opportunities for innovation, efficiency,',
                   'and competitiveness in the industrial sector'
                   ];
+                  imagePath = '';
                   break;
                   case 'Virtual Comissioning':
                   paragraphs = ['Virtual commissioning is a process used in engineering and manufacturing industries to',
@@ -873,6 +920,7 @@ yPosition -= 40;
                   'organizations to achieve higher productivity, reliability, and efficiency while mitigating risks and',
                   'uncertainties associated with traditional commissioning approaches.'
                   ];
+                  imagePath = '';
                   break;
                   case 'Vuforia Chalk':
                   paragraphs = ['Vuforia Chalk is an augmented reality (AR) remote assistance platform developed by PTC, the',
@@ -884,6 +932,7 @@ yPosition -= 40;
                   'enhances customer satisfaction by enabling faster problem resolution and more effective',
                   'communication between remote teams.'
                   ];
+                  imagePath = '';
                   break;
                   case 'Vuforia Expert Capture':
                   paragraphs = ['Vuforia Expert Capture is an augmented reality (AR) software solution developed by PTC,',
@@ -894,6 +943,7 @@ yPosition -= 40;
                   'technology to create, deliver, and manage interactive instructions and procedures for frontline',
                   'workers, improving productivity, quality, and safety in industrial environments.'
                   ];
+                  imagePath = '';
                   break;
                   case 'Vuforia View':
                   paragraphs = ['Vuforia View is an augmented reality (AR) application developed by PTC, the creator of the',
@@ -904,6 +954,7 @@ yPosition -= 40;
                   'efficiency, and decision-making in various industries such as manufacturing, field service,',
                   'training, and maintenance.'
                   ];
+                  imagePath = '';
                   break;
                   case 'Yield Optimization':
                   paragraphs = ['Yield optimization refers to the process of maximizing the output or yield of a manufacturing',
@@ -913,14 +964,13 @@ yPosition -= 40;
                   'implementing appropriate strategies, organizations can achieve significant improvements in',
                   'yield, productivity, and profitability, resulting in a competitive advantage in the marketplace.'
                   ];
+                  imagePath = '';
                   break;
               
           }
   
-          // Concatenate paragraphs into a single text block
-          const formattedParagraph = paragraphs.join('\n'); // Join paragraphs with newline
-  
-          selectedValues.push({ value, paragraph: formattedParagraph });
+          const formattedParagraph = paragraphs.join('\n');
+          selectedValues.push({ value, paragraph: formattedParagraph, imagePath });
       });
   
       return selectedValues;
@@ -935,6 +985,7 @@ yPosition -= 40;
       window.location.href = url;
     }
   </script>
+  <script src="https://unpkg.com/pdf-lib"></script>
 
 </body>
 
