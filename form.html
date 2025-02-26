@@ -331,45 +331,56 @@ yPosition -= 40;
           
       });
   
-     // Add selected Use Cases with paragraphs and images
-yPosition -= 20;
+    // Move "Use Cases" Title to the Second Page
+addNewPage();
 page.drawText('Use Cases:', { x: 50, y: yPosition, size: 16 });
-yPosition -= 20;
+yPosition -= 30;
 
-for (const { value, paragraph, imagePath } of selectedUseCases) {
+// Iterate through Use Cases
+for (let i = 0; i < selectedUseCases.length; i++) {
+    const { value, paragraph, imagePath } = selectedUseCases[i];
 
-  if (yPosition < footerMargin + 50) addNewPage();
+    // For the first use case, keep it on the second page
+    if (i > 0) {
+        addNewPage(); // Each subsequent use case gets a new page
+        yPosition -= 20;
+    }
 
-  page.drawText(value, { x: 80, y: yPosition, size: 12 });
+    // Title of the use case
+    page.drawText(value, { x: 80, y: yPosition, size: 12 });
+    yPosition -= 20;
+    // Embed and draw image
+    if (imagePath) {
+      try {
+          const imageBytes = await fetch(imagePath).then(res => res.arrayBuffer());
+          const pngImage = await pdfDoc.embedPng(imageBytes);
+          const { width, height } = pngImage.scale(0.2);
+
+          if (yPosition < height + footerMargin) addNewPage();
+
+          page.drawImage(pngImage, { x: 80, y: yPosition - height, width, height });
+          yPosition -= height + 20;
+      } catch (error) {
+          console.error("Error loading image:", error);
+      }
+  }
   yPosition -= 20;
 
-  // Embed and draw image
-if (imagePath) {
-  try {
-      const imageBytes = await fetch(imagePath).then(res => res.arrayBuffer());
-      const pngImage = await pdfDoc.embedPng(imageBytes);
-      const { width, height } = pngImage.scale(0.2);
+    // Add paragraph text
+    const lines = paragraph.split('\n');
+    for (const line of lines) {
+        if (yPosition < footerMargin + 30) addNewPage();
+        page.drawText(line, { x: 80, y: yPosition, size: 10 });
+        yPosition -= 12;
+    }
 
-      if (yPosition < height + footerMargin) addNewPage();
+    
 
-      page.drawImage(pngImage, { x: 80, y: yPosition - height, width, height });
-      yPosition -= height + 20;
-  } catch (error) {
-      console.error("Error loading image:", error);
-  }
+   
 }
 
-  const lines = paragraph.split('\n');
-  for (const line of lines) {
-      if (yPosition < footerMargin + 30) addNewPage();
-      page.drawText(line, { x: 80, y: yPosition, size: 10 });
-      yPosition -= 12;
-  }
 
-  
 
-  yPosition -= 20;
-}
   
       // Add selected Demos with paragraphs
       /*
