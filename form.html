@@ -241,6 +241,12 @@
   
       // Create a new PDF document
       const pdfDoc = await PDFLib.PDFDocument.create();
+      const watermarkUrl = "https://raw.githubusercontent.com/DTEC1-GGN/DTEC-Visit-Form/refs/heads/main/RA_Logo.png";
+    
+    // Fetch and embed the watermark image
+    const imageBytes = await fetch(watermarkUrl).then(res => res.arrayBuffer());
+    const watermarkImage = await pdfDoc.embedPng(imageBytes);
+    const { width, height } = watermarkImage.scale(0.7);
       
       // Add multiple pages
       let page;
@@ -252,6 +258,7 @@
       function addNewPage() {
         page = pdfDoc.addPage();
         addheader(page);
+        addWatermark(page);
         yPosition = 900 - footerMargin; // Reset y position for the new page
         pageNum++;
        
@@ -272,11 +279,17 @@
         yPosition -= 20; 
         page.drawText(footerText2,{x:50,y:40,size:9});
         yPosition -= 20; 
-       
-         
-      
       }
-      
+      function addWatermark(page) {
+        page.drawImage(watermarkImage, {
+            x: 130, // Center horizontally
+            y: 350, // Center vertically
+            width,
+            height,
+            opacity: 0.2, // Faint watermark effect
+        });
+    }
+
   
       // Add content to pages
       addNewPage(); // Start with the first page
